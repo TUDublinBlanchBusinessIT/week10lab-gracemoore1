@@ -1,34 +1,65 @@
-<div id="fullCalModal" class="modal" role="dialog">
+<!-- Bootstrap 5 Modal -->
+<div id="fullCalModal" class="modal fade" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">×</button> <h4 class="modal-title">Modal Header</h4>       </div>
+        <h4 class="modal-title" id="modalTitle">Modal Header</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
       <div class="modal-body">
-        <div class="container-fluid">
-          <form action="{{route('bookings.store')}}" method="post">
-            @csrf
-              <div class="form-group"> <label for="memerid">Member ID</label>
-<input type="text" class="form-control" id="memid" name="memberid"/>
+        <form id="bookingForm" action="{{ route('bookings.store') }}" method="post">
+          @csrf
+          <div class="mb-3">
+            <label for="memid" class="form-label">Member ID</label>
+            <input type="text" class="form-control" id="memid" name="memberid" required />
+          </div>
+          <div class="mb-3">
+            <label for="bookingDate" class="form-label">Booking Date</label>
+            <input type="date" class="form-control" id="bookingDate" name="bookingdate" required />
+          </div>
+          <div class="mb-3">
+            <label for="starttime" class="form-label">Start Time</label>
+            <input type="time" class="form-control" id="starttime" name="starttime" required />
+          </div>
+          <div class="mb-3">
+            <label for="endtime" class="form-label">End Time</label>
+            <input type="time" class="form-control" id="endtime" name="endtime" required />
+          </div>
+          <div class="mb-3">
+            <label for="courtid" class="form-label">Court ID</label>
+            <input type="text" class="form-control" id="courtid" name="courtid" required />
+          </div>
+          <div class="modal-footer">
+            <button type="submit" id="submitButton" class="btn btn-primary">Create Appointment</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
-<div class="form-group">
-<label for="bookingdate">Booking Date</label>
-<input type="text" class="form-control" id="bookingDate" name="bookingdate"/>
-</div>
-<div class="form-group">
-<label for="starttime">Start Time</label>
-<input type="text" class="form-control" id="starttime" name="starttime"/> </div>
-<div class="form-group">
-<label for="endtime">Start Time</label>
-<input type="text" class="form-control" id="endtime" name="endtime"/> </div>
-<div class="form-group">
-<label for="courtid">CourtID</label>
-<input type="text" class="form-control" id="courtid" name="courtid"/> </div>
-<div class="modal-footer">
-<button type="submit" id="submitButton" class="btn btn-default" data-dismiss="modal">Create Appointment</button>
-</div>
-</form>
-</div>
-</div>
-</div>
-</div>
-</div>
+<!-- Bootstrap 5 JavaScript (No jQuery needed) -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("bookingForm");
+    form.addEventListener("submit", (event) => {
+      event.preventDefault(); // Prevent default form submission
+      const formData = new FormData(form);
+      fetch(form.action, {
+        method: "POST",
+        body: formData,
+        headers: {
+          "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+          const modal = bootstrap.Modal.getInstance(document.getElementById("fullCalModal"));
+          modal.hide(); // Close modal
+          form.reset(); // Reset form fields
+        })
+        .catch((error) => console.error("Error:", error));
+    });
+  });
+</script>
